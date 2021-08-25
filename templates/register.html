@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
+<style>
+
+  body {
+    background-color: #e3e5eb;
+  }
+
+  #form {
+    background-color: #9ACD32;
+    margin: 100px auto;
+    font-family: Raleway;
+    padding: 50px;
+    width: 35%;
+    min-width: 300px;
+  }
+
+  #msg {
+    background-color: #e3e5eb;
+    margin: 100px auto;
+    font-family: Raleway;
+    padding: 20px;
+    width: 40%;
+  }
+
+  h1 {
+    text-align: center;
+  }
+  
+  input {
+    padding: 10px;
+    width: 100%;
+    font-size: 17px;
+    font-family: Raleway;
+    border: 1px solid #aaaaaa;
+  }
+  #submit {
+    padding: 10px;
+    width: 105%;
+    font-size: 17px;
+    font-family: Raleway;
+    border: 1px solid #aaaaaa;
+  }
+
+</style>
+
+<body>
+<form id="form" action="register" method="POST">
+  {% csrf_token %}
+  <h1><b>Admin Register</b></h1><br>
+   Username:<p><input type="text"  name="username"></p>
+   Password:<p><input type="password" name="password1"></p>
+   Confirm Password:<p><input type="password" name="password2"></p>
+   <input id="submit" type="submit">
+</form>
+
+<div id="msg">
+  {% for message in messages %}
+  <h3>{{message}}</h3>
+  {% endfor %}
+</div>
+
+</body>
+</html>

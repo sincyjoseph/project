@@ -1,0 +1,353 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.0/jquery.min.js" integrity="sha256-xNzN2a4ltkB44Mc/Jz3pT4iU1cmeR0FkXs4pru/JxaQ=" crossorigin="anonymous"></script> 
+  <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
+  <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css"> 
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+  <title>Admin Page</title>
+  <style type="text/css">
+      body {
+        background-color: #e3e5eb;
+      }
+      table {
+        font-family: arial, sans-serif;
+        border-collapse: collapse;
+        width: 95%;
+      }
+      
+      th{
+        border: 1px solid #0f0808;
+        text-align: left;
+        padding: 8px;
+        background-color: #a1c8f5;
+      }
+      td{
+        border: 1px solid #0f0808;
+        text-align: left;
+        padding: 8px;
+      }
+      tr:nth-child(even) {
+        background-color: rgb(200, 250, 164);
+      }
+    
+    /*navigation bar*/
+    .nav {
+      overflow: hidden;
+      background-color: #123d3d;
+      padding: 14px 16px;
+      font-size: 17px;
+      color: #f3ecec;
+      font-size: 17px;
+      width: 95%;
+    }
+    .nav a {
+      color: #f3ecec;
+      font-size: 15px;
+    }
+    
+    .card {
+      box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+      transition: 0.3s;
+      width: 15%;
+      background-color: #f4f4fa;
+    }
+    
+    .card:hover {
+      box-shadow: 0 8px 16px 0 #a8050533;
+    }
+    
+    .container {
+      padding: 2px 16px;
+    }
+
+    .sidenav{
+      height: 100%;
+      width: 160px;
+      position: fixed;
+      z-index: 1;
+      top: 0;
+      left: 0;
+      background-color: #123d3d;
+      overflow-x: hidden;
+      padding-top: 20px;
+    }
+    .sidenav a{
+      padding: 6px 8px 6px 16px;
+      text-decoration: none;
+      font-size: 25px;
+      color: #818181;
+      display: block;
+      } 
+
+    .sidenav a:hover{
+      color: #f1f1f1;
+      }     
+    .main{
+      margin-left: 160px;
+      padding: 0px 10px;
+    }
+  </style>
+
+</head>
+<body>
+  <div class="sidenav">
+    <a href="/">Home</a>
+  </div>
+
+<div class="main">
+  <ul>
+    {% if user.is_authenticated %} 
+  
+      <p><div style="padding-left:800px" class="nav">
+        Hello, {{user.username}} | <a href="logout">{{user.username}} logout</a>
+      </div></p>
+
+      <div class="card">
+      <div class="container">
+        <h4><b>{{count}}</b></h4> 
+        <p>Total Entries</p> 
+      </div></div><br>
+    
+      <div class="row">
+      <div class="col-md-8"></div>
+      <div class="col-md-3">
+      <div class="form-group">
+        <input type="text" class="form-control" id="searchField" placeholder="Search by firstname">{% csrf_token %}
+      </div></div></div>
+
+      <div class="app-table">
+        <table>
+          <thead>
+            <tr>
+              <th>First Name</th>
+              <th>Last Name</th>
+              <th>Date of Birth</th>
+              <th>Gender</th>
+              <th>Created Timestamp</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {% for user in users %}
+              <tr>
+                <td>{{user.fname}}</td>
+                <td>{{user.lname}}</td>
+                <td>{{user.dateofbirth}}</td>
+                <td>{{user.gender}}</td>
+                <td>{{user.created}}</td>
+                <td>
+                  <span class="glyphicon glyphicon-eye-open" data-id={{user.id}} data-toggle="modal" data-target="#view-model"></span>
+                  <span class="glyphicon glyphicon-pencil" data-id={{user.id}} data-toggle="modal" data-target="#view-model"></span>
+                  <span class="glyphicon glyphicon-trash" data-id={{user.id}} data-toggle="modal" data-target="#view-model"></span>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+  
+      <div class="table-output">
+        <table>
+          <thead>
+            <tr>
+              <th>First Name</th>
+              <th>Last Name</th>
+              <th>Date of Birth</th>
+              <th>Gender</th>
+              <th>Created Timestamp</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+
+          <tbody class="table-body">
+
+          </tbody>
+
+        <div class="no-results"></div>
+
+        </table>
+      </div>
+
+      <div class="pagination-container">
+        {% if users.has_other_pages %}
+
+          <ul class="pagination">
+
+              {% if users.has_previous %}
+                <li><a href="?page={{users.previous_page_number}}">&laquo;</a></li>
+              {% else %}
+                <li class="disabled"><span>&laquo;</span></li>
+              {% endif %}
+  
+              {% for i in users.paginator.page_range %}
+                {% if users.number == i %}
+                  <li class="active"><span>{{ i }}<span class="sr-only">(current)</span></span></li>
+                {% else %}
+                  <li><a href="?page={{i}}">{{i}}</a></li>
+                {% endif %}
+              {% endfor %}
+  
+              {% if users.has_next %}
+                <li><a href="?page={{users.next_page_number}}">&raquo;</a></li>
+              {% else %}
+                <li class="disabled"><span>&raquo;</span></li>
+              {% endif %}
+          </ul>
+
+        {% endif %}
+      </div>
+
+    {% endif %}    
+  </ul>  
+</div>
+  
+
+  <script>
+    const searchField = document.querySelector("#searchField");
+    const tableOutput = document.querySelector(".table-output");
+    const appTable = document.querySelector(".app-table");
+    const paginationContainer = document.querySelector(".pagination-container");
+    tableOutput.style.display = "none";
+    const tbody = document.querySelector(".table-body");
+    const noResults = document.querySelector(".no-results");
+
+    searchField.addEventListener("keyup", (e)=>{
+      const searchValue = e.target.value;
+
+      if(searchValue.trim().length > 0){
+        paginationContainer.style.display = "none";
+        tbody.innerHTML = ""; 
+        console.log('searchValue', searchValue);
+        fetch("/search-userdetails", {
+          body: JSON.stringify({searchText: searchValue}),
+          method: "POST",
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            console.log("data", data);
+            appTable.style.display = "none";
+            tableOutput.style.display = "block";
+
+            console.log("data.length", data.length);
+
+            if(data.length === 0){
+              noResults.style.display = "block";
+              tableOutput.style.display = "none";
+            } else {
+              noResults.style.display = "block";
+              data.forEach((item) => {
+                tbody.innerHTML += `
+                <tr>
+                  <td>${item.fname}</td>
+                  <td>${item.lname}</td>
+                  <td>${item.dateofbirth}</td>
+                  <td>${item.gender}</td>
+                  <td>${item.created}</td>
+                  <td>
+                    <span class="glyphicon glyphicon-eye-open" data-id={{user.id}} data-toggle="modal" data-target="#view-model"></span>
+                    <span class="glyphicon glyphicon-pencil" data-id={{user.id}} data-toggle="modal" data-target="#view-model"></span>
+                    <span class="glyphicon glyphicon-trash" data-id={{user.id}} data-toggle="modal" data-target="#view-model"></span>
+                  </td></tr>`;
+              });
+            }
+          });
+      } else {
+        tableOutput.style.display = "none";
+        appTable.style.display = "block";
+        paginationContainer.style.display = "block";
+      }
+    }); 
+
+//for Viewing data
+  $('body').on('click', 'span.glyphicon-eye-open', function () {
+      const user_id = $(this).data('id')
+      console.log(user_id);
+
+      $('#modal-view-title').html("User Details")
+      $('#modal-view-body').html(`<div class="text-center">
+      <div class="lds-ring primary"><div></div><div></div><div></div><div></div></div>
+      Loading....
+      </div>`);
+      $.ajax({
+          type: "GET",
+          url: `/dashboard/${user_id}/`,
+          success: (res) => {
+              $('#modal-view-body').html(res)
+          },
+          error: () => {
+              $('#modal-view-body').html('An error occurred while fetching data, Try again')
+          }
+      })
+  });
+
+//for editing data
+$('body').on('click', 'span.glyphicon-pencil', function () {
+  const user_id = $(this).data('id')
+  console.log(user_id);
+
+  $('#modal-view-title').html("User Details")
+  $('#modal-view-body').html(`<div class="text-center">
+  <div class="lds-ring primary"><div></div><div></div><div></div><div></div></div>
+  Loading....
+  </div>`);
+  $.ajax({
+      type: "GET",
+      url: `/dashboard/${user_id}/`,
+      success: (res) => {
+          $('#modal-view-body').html(res)
+      },
+      error: () => {
+          $('#modal-view-body').html('An error occurred while fetching data, Try again')
+      }
+  })
+});
+
+
+//for deleting data data
+$('body').on('click', 'span.glyphicon-trash', function () {
+  const user_id = $(this).data('id')
+  console.log(user_id);
+
+  $('#modal-view-title').html("User Details")
+  $('#modal-view-body').html(`<div class="text-center">
+  <div class="lds-ring primary"><div></div><div></div><div></div><div></div></div>
+  Loading....
+  </div>`);
+  $.ajax({
+      type: "GET",
+      url: `/dashboard/${user_id}/`,
+      success: (res) => {
+          $('#modal-view-body').html(res + "Are you sure you want to delete this entry?  " + `<a class="btn btn-primary" href="/dashboard/${user_id}/delete/" role="button">YES</a> <a class="btn btn-primary" href="/adminpage" role="button">NO</a>`)
+      },
+      error: () => {
+          $('#modal-view-body').html('An error occurred while fetching data, Try again')
+      }
+  })
+});
+
+</script>
+
+  <!-- Pop up  -->
+  <div class="modal" id="view-model" tabindex="-1" role="dialog" style"font-family: Arial, Helvetica, sans-serif;font-size:25px;">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+              <h4 class="modal-title" id="modal-view-title"></h4>
+            </div>
+            <div class="modal-body" id="modal-view-body">
+            </div>
+        </div>
+    </div>
+</div>
+    
+</body>
+</html>
