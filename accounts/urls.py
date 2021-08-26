@@ -13,4 +13,5 @@ urlpatterns = [
     path('search-userdetails', csrf_exempt(views.search_userdetails), name='search_userdetails'),
     path('dashboard/<int:pk>/', views.UserDetailView.as_view(), name='user_detail'),
     path('dashboard/<int:pk>/delete/', views.UserDetailDeleteView, name='user_detaildelete'),
+    path('export_excel/', views.export_excel, name='export_excel'),
 ]

@@ -112,6 +112,8 @@
         <h4><b>{{count}}</b></h4> 
         <p>Total Entries</p> 
       </div></div><br>
+
+      <button id="export-button" class="btn btn-primary">Export to Excel</button>
     
       <div class="row">
       <div class="col-md-8"></div>
@@ -331,7 +333,24 @@ $('body').on('click', 'span.glyphicon-trash', function () {
   })
 });
 
+$('#export-button').click(function () {
+  $.ajax({
+    type: "POST",
+    url: "/export_excel/",
+    data: {
+          csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+    },
+    success: (res) => {
+      var ws = XLSX.utils.json_to_sheet(res.userdetail);
+      var wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "People");
+      XLSX.writeFile(wb, 'covid-non-testing.xlsx');
+    }
+})
+});
 </script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.13.1/xlsx.full.min.js"></script>
 
   <!-- Pop up  -->
   <div class="modal" id="view-model" tabindex="-1" role="dialog" style"font-family: Arial, Helvetica, sans-serif;font-size:25px;">

@@ -120,3 +120,11 @@ def UserDetailDeleteView(request, pk):
     userdata.delete()
     return redirect(adminpage)
 
+
+def export_excel(request):
+    try:
+        userdetail = list(UserDetailsModel.objects.all().values())
+        return JsonResponse({'status': '1', 'userdetail': userdetail})
+    except Exception as e:
+            return JsonResponse({'status': '0', 'data': str(e)})
+
